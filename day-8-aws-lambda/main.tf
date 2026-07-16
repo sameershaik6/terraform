@@ -121,3 +121,36 @@ resource "aws_lambda_permission" "allow_cloudwatch" {
 # --Eliminated manual ZIP creation and manual S3 uploads.
 # ---Managed all infrastructure as code (IaC), making deployments repeatable, version-controlled, and easy to maintain.
 # Automated daily Lambda execution using Amazon EventBridge without manual intervention.
+
+
+# Terraform Apply
+#       │
+#       
+# Package Lambda Source Code
+#       │
+#       
+# Create Amazon S3 Bucket
+#       │
+#       
+# Upload Lambda ZIP to S3
+#       │
+#       
+# Create IAM Role
+#       │
+#       
+# Attach Lambda Execution Policy
+#       │
+#       
+# Create AWS Lambda Function
+#       │
+#       
+# Create Amazon EventBridge Schedule
+#       │
+#       
+# Grant EventBridge Permission to Invoke Lambda
+#       │
+#       
+# Associate EventBridge Rule with Lambda
+#       │
+#       
+# Lambda Executes Automatically Every Day at 00:00 UTC
