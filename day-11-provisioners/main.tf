@@ -1,7 +1,7 @@
 resource "aws_key_pair" "example" {
-    key_name = "mykey"
-    public_key = file("C:/Users/samee/.ssh/id_ed25519.pub")
-  
+  key_name   = "mykey"
+  public_key = file("C:/Users/samee/.ssh/id_ed25519.pub")
+
 }
 
 
@@ -86,33 +86,85 @@ resource "aws_instance" "server" {
   vpc_security_group_ids      = [aws_security_group.webSg.id]
   associate_public_ip_address = true
 
-tags = {
-  Name = "myserver"
+  tags = {
+    Name = "myserver"
+  }
+
+  # connection {
+  #     type        = "ssh"
+  #     user        = "ubuntu"                          # ✅ Correct for Ubuntu AMIs
+  #     private_key = file("C:/Users/samee/.ssh/id_ed25519")          # Path to private key
+  #     host        = self.public_ip  #or we can use aws_instance.server.public_ip
+  #     timeout     = "5m"
+  # }
+
+  # provisioner "file" {
+  #     source      = "file10"
+  #     destination = "/home/ubuntu/file10" #destination path on the remote instance copy the file10 from local to remote instance with the name file10
+  #   }
+
+  #   provisioner "remote-exec" {
+  #     inline = [
+  #       "touch /home/ubuntu/file200",
+  #       "echo 'hello from veera devops cloud nareshit' >> /home/ubuntu/file200"
+  #     ]
+  #   }
+  #    provisioner "local-exec" {
+  #     command = "touch file500" 
+
+
+  #  }
+
 }
 
-connection {
+# This example forces the provisioner to run again every time Terraform is applied.
+# The timestamp() value changes on every plan, so the null resource is updated.
+# resource "null_resource" "timestamp_triggered_provisioner" {
+#   depends_on = [aws_instance.server]
+
+#   triggers = {
+#     always_run = timestamp()
+#   }
+
+#   connection {
+#     type        = "ssh"
+#     user        = "ubuntu"
+#     private_key = file("C:/Users/samee/.ssh/id_ed25519")
+#     host        = aws_instance.server.public_ip
+#     timeout     = "5m"
+#   }
+
+#   provisioner "file" {
+#     source      = "${path.module}/file10"
+#     destination = "/home/ubuntu/file10"
+#   }
+
+#   provisioner "remote-exec" {
+#     inline = [
+#       "touch /home/ubuntu/file200",
+#       "echo 'hello from veera devops cloud nareshit' >> /home/ubuntu/file200"
+#     ]
+#   }
+# }
+
+# This example re-runs only when the script content changes.
+# filemd5() creates a hash of the script file and triggers the resource when it changes.
+resource "null_resource" "script_hash_triggered_provisioner" {
+  depends_on = [aws_instance.server]
+
+  triggers = {
+    script_hash = filemd5("${path.module}/setup.sh")
+  }
+
+  connection {
     type        = "ssh"
-    user        = "ubuntu"                          # ✅ Correct for Ubuntu AMIs
-    private_key = file("C:/Users/samee/.ssh/id_ed25519")          # Path to private key
-    host        = self.public_ip  #or we can use aws_instance.server.public_ip
+    user        = "ubuntu"
+    private_key = file("C:/Users/samee/.ssh/id_ed25519")
+    host        = aws_instance.server.public_ip
     timeout     = "5m"
-}
-
-provisioner "file" {
-    source      = "file10"
-    destination = "/home/ubuntu/file10" #destination path on the remote instance copy the file10 from local to remote instance with the name file10
   }
 
   provisioner "remote-exec" {
-    inline = [
-      "touch /home/ubuntu/file200",
-      "echo 'hello from veera devops cloud nareshit' >> /home/ubuntu/file200"
-    ]
+    script = "${path.module}/setup.sh"
   }
-   provisioner "local-exec" {
-    command = "touch file500" 
-    
-   
- }
-
 }
