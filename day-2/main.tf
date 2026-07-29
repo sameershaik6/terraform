@@ -7,8 +7,8 @@ resource "aws_vpc" "vpc1" {
 }
 
 resource "aws_subnet" "subnet1" {
-  vpc_id            = aws_vpc.vpc1.id
-  cidr_block        = var.subnet_cidr_block
+  vpc_id     = aws_vpc.vpc1.id
+  cidr_block = var.subnet_cidr_block
   tags = {
     Name = var.tag_subnet
   }
