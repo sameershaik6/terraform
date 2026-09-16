@@ -1,6 +1,6 @@
-Here is a simple `README.md` you can use for your Terraform Data Source project.
 
-````md
+
+
 # Terraform Data Sources
 
 ## What is a Data Source?
